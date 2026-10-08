@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Street / Typo Archive</title>
+  
+  <!-- Tailwind CSS & React Scripts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #eae9e4;
+      background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const entries = [
+      {
+        id: "TYPO 1.",
+        gps: "51.0543° N, 3.7252° E",
+        classification: "GEPRINTE VINYL / SCHREEFLOOS / SLIJTAGE: 15%",
+      },
+      {
+        id: "TYPO 2.",
+        gps: "51.0512° N, 3.7111° E",
+        classification: "GEERODEERDE SCHREEF / BAKSTEEN / SLIJTAGE: 60%",
+      },
+      {
+        id: "TYPO 3.",
+        gps: "51.0589° N, 3.7198° E",
+        classification: "NEON HOOGCONTRAST / GLAS / SLIJTAGE: 05%",
+      },
+      {
+        id: "TYPO 4.",
+        gps: "51.9244° N, 4.4777° E",
+        classification: "RELIËFLETTER / SCHREEF / SLIJTAGE: 30%",
+      },
+    ];
+
+    function App() {
+      const [isExpanded, setIsExpanded] = useState(false);
+
+      return (
+        <div className="min-h-screen flex items-center justify-center p-8 overflow-hidden">
+          <div
+            className={`bg-[#f5f4ef] border-[1.5px] border-[#000000] flex flex-col transition-all duration-500 ease-in-out shadow-2xl relative ${
+              isExpanded
+                ? "w-full max-w-[1400px] h-[800px]"
+                : "w-full max-w-[700px] h-[700px]"
+            }`}
+          >
+            {/* Header Row */}
+            <div
+              className={`grid border-b-[1.5px] border-[#000000] transition-all duration-500 ${
+                isExpanded ? "grid-cols-12" : "grid-cols-4"
+              }`}
+            >
+              {/* Logo Box */}
+              <div
+                className={`border-r-[1.5px] border-[#000000] p-4 flex flex-row items-center justify-between gap-4 overflow-hidden ${
+                  isExpanded ? "col-span-3" : "col-span-1"
+                }`}
+              >
+                <h1 className="font-bold text-sm md:text-base leading-tight uppercase whitespace-nowrap flex-shrink-0">
+                  STREET
+                  <br />/ TYPO
+                </h1>
+                <span className="text-[10px] text-right uppercase font-medium hidden sm:block leading-tight opacity-60">
+                  VELD ONDERZOEK
+                  <br />2026-27
+                </span>
+              </div>
+
+              {/* Subtitle Box */}
+              <div
+                className={`border-r-[1.5px] border-[#000000] p-4 flex items-center justify-center text-center text-[10px] md:text-xs font-bold uppercase ${
+                  isExpanded ? "col-span-4" : "col-span-1"
+                }`}
+              >
+                <span>
+                  ARCHIEF VAN GEVONDEN TYPO
+                </span>
+              </div>
+
+              {/* INDEX Link */}
+              <button
+                onClick={() => setIsExpanded(true)}
+                className={`border-r-[1.5px] border-[#000000] flex items-center justify-center relative hover:bg-black/5 transition-colors cursor-pointer p-4 ${
+                  isExpanded ? "col-span-2" : "col-span-1"
+                }`}
+              >
+                <span className="text-xs font-bold uppercase">INDEX</span>
+                {isExpanded && (
+                  <div className="absolute bottom-0 left-0 w-full h-2 bg-[#B2FF00] border-t-[1.5px] border-[#000000]"></div>
+                )}
+              </button>
+
+              {/* TAXONOMY Link */}
+              <div
+                className={`border-[#000000] flex items-center justify-center relative hover:bg-black/5 transition-colors cursor-pointer p-4 ${
+                  isExpanded ? "col-span-1 border-r-[1.5px]" : "col-span-1"
+                }`}
+              >
+                <span className="text-xs font-bold uppercase">TAXONOMY</span>
+              </div>
+
+              {/* Expanded Only: LOCATIONS Link */}
+              {isExpanded && (
+                <div className="col-span-1 border-r-[1.5px] border-[#000000] flex items-center justify-center hover:bg-black/5 transition-colors cursor-pointer p-4">
+                  <span className="text-xs font-bold uppercase">LOCATIONS</span>
+                </div>
+              )}
+
+              {/* Expanded Only: BACK Button */}
+              {isExpanded && (
+                <button
+                  onClick={() => setIsExpanded(false)}
+                  className="col-span-1 bg-[#000000] text-white flex justify-center items-center text-xs font-bold cursor-pointer hover:bg-[#333] transition-colors"
+                >
+                  &larr; BACK
+                </button>
+              )}
+            </div>
+
+            {/* Card Body */}
+            <div className="flex-1 relative overflow-hidden">
+              {/* State 1: Grid Matrix & Title */}
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 flex flex-col ${
+                  !isExpanded
+                    ? "opacity-100 pointer-events-auto"
+                    : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 opacity-30 pointer-events-none">
+                  {Array.from({ length: 36 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="border-r border-b border-[#000000]"
+                    ></div>
+                  ))}
+                </div>
+                <div className="flex-1 flex items-center justify-center relative z-10 p-8">
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase text-center leading-[0.85]">
+                    URBAN TYPO
+                    <br />PROJECT
+                  </h2>
+                </div>
+                
+                {/* Typo van de week box */}
+                <div className="absolute bottom-0 right-0 w-1/6 h-1/6 border-t-[1.5px] border-l-[1.5px] border-[#000000] bg-[#f5f4ef] flex flex-col p-1.5 md:p-2 z-20">
+                  <span className="text-[6px] md:text-[7px] uppercase font-medium opacity-60 leading-tight self-start">
+                    TYPO VAN
+                    <br />DE WEEK:
+                  </span>
+                  <div className="flex-1 flex items-center justify-center">
+                    <span className="text-4xl md:text-5xl font-bold tracking-tighter hover:text-[#B2FF00] transition-colors" style={{ WebkitTextStroke: '1px black' }}>A</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* State 2: Index List */}
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 bg-[#f5f4ef] flex flex-col overflow-y-auto ${
+                  isExpanded
+                    ? "opacity-100 pointer-events-auto"
+                    : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <div className="flex-1 flex flex-col">
+                  {entries.map((entry, i) => (
+                    <div
+                      key={i}
+                      className="grid grid-cols-12 border-b border-[#000000] text-sm hover:bg-black hover:text-white transition-colors cursor-pointer group"
+                    >
+                      <div className="col-span-3 border-r border-[#000000] group-hover:border-white p-4 font-bold md:text-base text-xs">
+                        {entry.id}
+                      </div>
+                      <div className="col-span-4 border-r border-[#000000] group-hover:border-white p-4 text-xs md:text-sm flex items-center font-medium">
+                        {entry.gps}
+                      </div>
+                      <div className="col-span-5 p-4 text-xs md:text-sm flex items-center uppercase">
+                        {entry.classification}
+                      </div>
+                    </div>
+                  ))}
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div
+                      key={`empty-${i}`}
+                      className="grid grid-cols-12 border-b border-[#000000] text-sm min-h-[57px]"
+                    >
+                      <div className="col-span-3 border-r border-[#000000] p-4"></div>
+                      <div className="col-span-4 border-r border-[#000000] p-4"></div>
+                      <div className="col-span-5 p-4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
