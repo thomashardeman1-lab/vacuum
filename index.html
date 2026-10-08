@@ -11,6 +11,11 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- Google Fonts voor de verschillende Typo stijlen -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Space+Mono:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+
   <style>
     body {
       background-color: #eae9e4;
@@ -30,25 +35,67 @@
     const entries = [
       {
         id: "TYPO 1.",
-        gps: "51.0543° N, 3.7252° E",
+        title: "BROUWERIJ LAMOT",
+        gps: "51.0281° N, 4.4802° E",
         classification: "GEPRINTE VINYL / SCHREEFLOOS / SLIJTAGE: 15%",
+        invertN: false
       },
       {
         id: "TYPO 2.",
+        title: "IN DEN GOEDEN KOOP",
         gps: "51.0512° N, 3.7111° E",
         classification: "GEERODEERDE SCHREEF / BAKSTEEN / SLIJTAGE: 60%",
+        invertN: true
       },
       {
         id: "TYPO 3.",
+        title: "A. HOSTYN",
         gps: "51.0589° N, 3.7198° E",
         classification: "NEON HOOGCONTRAST / GLAS / SLIJTAGE: 05%",
+        invertN: false
       },
       {
         id: "TYPO 4.",
+        title: "LINIQUE",
         gps: "51.9244° N, 4.4777° E",
         classification: "RELIËFLETTER / SCHREEF / SLIJTAGE: 30%",
+        invertN: false
       },
+      {
+        id: "TYPO 5.",
+        title: "LA PALOMA",
+        gps: "51.0531° N, 3.7230° E",
+        classification: "GESCHILDERD HOUT / AMBACHTELIJK / SLIJTAGE: 45%",
+        invertN: false
+      },
+      {
+        id: "TYPO 6.",
+        title: "SOUBRY",
+        gps: "50.8267° N, 3.2649° E",
+        classification: "GEPRINTE GEVEL / GEANODISEERD / SLIJTAGE: 20%",
+        invertN: false
+      }
     ];
+
+    // Helper component om de letter N 180 graden te draaien
+    function FormattedTitle({ title, invertN }) {
+      if (!invertN) return <span>{title}</span>;
+
+      return (
+        <span>
+          {title.split(/(N|n)/g).map((part, index) => {
+            if (part.toUpperCase() === 'N') {
+              return (
+                <span key={index} className="inline-block transform rotate-180">
+                  {part}
+                </span>
+              );
+            }
+            return part;
+          })}
+        </span>
+      );
+    }
 
     function App() {
       const [isExpanded, setIsExpanded] = useState(false);
@@ -153,10 +200,61 @@
                     ></div>
                   ))}
                 </div>
+
+                {/* Hero Title met diverse Typo Stijlen */}
                 <div className="flex-1 flex items-center justify-center relative z-10 p-8">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase text-center leading-[0.85]">
-                    URBAN TYPO
-                    <br />PROJECT
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase text-center leading-[0.9]">
+                    <div className="flex items-center justify-center gap-3 flex-wrap">
+                      <span>URBAN</span>
+                      <span className="inline-flex items-center gap-1.5 align-middle">
+                        {/* T: Gothic Blackletter met omlijning */}
+                        <span 
+                          style={{ 
+                            fontFamily: '"UnifrakturMaguntia", serif', 
+                            WebkitTextStroke: '1.5px black', 
+                            color: 'transparent' 
+                          }} 
+                          className="text-5xl md:text-6xl lg:text-7xl lowercase inline-block transform translate-y-[-2px]"
+                        >
+                          t
+                        </span>
+
+                        {/* Y: Cursief / Script */}
+                        <span 
+                          style={{ fontFamily: '"Caveat", cursive' }} 
+                          className="text-5xl md:text-6xl lg:text-7xl font-bold lowercase -mx-1"
+                        >
+                          y
+                        </span>
+
+                        {/* P: Strakke Monospace */}
+                        <span 
+                          style={{ fontFamily: '"Space Mono", monospace' }} 
+                          className="text-4xl md:text-5xl lg:text-6xl font-bold uppercase"
+                        >
+                          P
+                        </span>
+
+                        {/* O: Geometrische overlappende cirkels rozet */}
+                        <svg 
+                          className="w-9 h-9 md:w-11 md:h-11 lg:w-13 lg:h-13 inline-block align-middle ml-0.5" 
+                          viewBox="0 0 100 100" 
+                          fill="none" 
+                          stroke="black" 
+                          strokeWidth="2.5"
+                        >
+                          <circle cx="50" cy="30" r="20" />
+                          <circle cx="64" cy="36" r="20" />
+                          <circle cx="70" cy="50" r="20" />
+                          <circle cx="64" cy="64" r="20" />
+                          <circle cx="50" cy="70" r="20" />
+                          <circle cx="36" cy="64" r="20" />
+                          <circle cx="30" cy="50" r="20" />
+                          <circle cx="36" cy="36" r="20" />
+                        </svg>
+                      </span>
+                    </div>
+                    <span>PROJECT</span>
                   </h2>
                 </div>
                 
@@ -186,10 +284,11 @@
                       key={i}
                       className="grid grid-cols-12 border-b border-[#000000] text-sm hover:bg-black hover:text-white transition-colors cursor-pointer group"
                     >
-                      <div className="col-span-3 border-r border-[#000000] group-hover:border-white p-4 font-bold md:text-base text-xs">
-                        {entry.id}
+                      <div className="col-span-4 border-r border-[#000000] group-hover:border-white p-4 font-bold md:text-base text-xs flex items-center gap-2">
+                        <span className="opacity-40">{entry.id}</span>
+                        <FormattedTitle title={entry.title} invertN={entry.invertN} />
                       </div>
-                      <div className="col-span-4 border-r border-[#000000] group-hover:border-white p-4 text-xs md:text-sm flex items-center font-medium">
+                      <div className="col-span-3 border-r border-[#000000] group-hover:border-white p-4 text-xs md:text-sm flex items-center font-medium">
                         {entry.gps}
                       </div>
                       <div className="col-span-5 p-4 text-xs md:text-sm flex items-center uppercase">
@@ -197,13 +296,13 @@
                       </div>
                     </div>
                   ))}
-                  {Array.from({ length: 10 }).map((_, i) => (
+                  {Array.from({ length: 8 }).map((_, i) => (
                     <div
                       key={`empty-${i}`}
                       className="grid grid-cols-12 border-b border-[#000000] text-sm min-h-[57px]"
                     >
-                      <div className="col-span-3 border-r border-[#000000] p-4"></div>
                       <div className="col-span-4 border-r border-[#000000] p-4"></div>
+                      <div className="col-span-3 border-r border-[#000000] p-4"></div>
                       <div className="col-span-5 p-4"></div>
                     </div>
                   ))}
