@@ -1,276 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import { Shuffle, Grid, Type, RefreshCw } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEVER FINISHED — Kinetic Typo Matrix</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#F4F1EA] text-[#1E1C1A] font-mono select-none overflow-x-hidden min-h-screen">
 
-// ==========================================
-// 1. DE HISTORISCHE BELGISCHE GEVELSTIJLEN
-// ==========================================
-interface StyleTheme {
-  id: number;
-  name: string;
-  source: string;
-  bg: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    dark: string;
-  };
-}
+  <div id="root"></div>
 
-const HISTORIC_STYLES: StyleTheme[] = [
-  {
-    id: 1,
-    name: "Café Art Nouveau",
-    source: "In Den Goeden Koop (Gent)",
-    bg: "#F4F1EA",
-    colors: { primary: "#A63D2B", secondary: "#1B5238", accent: "#D9A036", dark: "#1E1C1A" }
-  },
-  {
-    id: 2,
-    name: "Beenhouwerij Block",
-    source: "Slagerij De Roo (Gentbrugge)",
-    bg: "#E8E3D8",
-    colors: { primary: "#8C1D0D", secondary: "#1A1A1A", accent: "#C47B2B", dark: "#0F0F0F" }
-  },
-  {
-    id: 3,
-    name: "Coiffure Marcel 1930",
-    source: "Kapperszaak Art Deco (Oostende)",
-    bg: "#1A1C1E",
-    colors: { primary: "#E5A93C", secondary: "#366B5C", accent: "#D96B43", dark: "#0B0C0D" }
-  },
-  {
-    id: 4,
-    name: "Station Tegelmozaïek",
-    source: "Gent-Sint-Pieters (Gent)",
-    bg: "#E6E8E3",
-    colors: { primary: "#2D5C43", secondary: "#B84328", accent: "#D6A338", dark: "#1A2620" }
-  },
-  {
-    id: 5,
-    name: "Cinema Capitole Neon",
-    source: "Gevel-Neon Lightbox (Gent)",
-    bg: "#0D111A",
-    colors: { primary: "#00E5FF", secondary: "#FF0055", accent: "#FFE600", dark: "#05070B" }
-  },
-  {
-    id: 6,
-    name: "Brouwerij Emaille",
-    source: "Industrieel Emaille Bord (Mechelen)",
-    bg: "#15243B",
-    colors: { primary: "#D9381E", secondary: "#E6A129", accent: "#F2F0EB", dark: "#0A121E" }
-  }
-];
+  <script type="text/babel">
+    const HISTORIC_STYLES = [
+      { id: 1, name: "Café Art Nouveau", source: "In Den Goeden Koop (Gent)", bg: "#F4F1EA", colors: { primary: "#A63D2B", secondary: "#1B5238", accent: "#D9A036", dark: "#1E1C1A" } },
+      { id: 2, name: "Beenhouwerij Block", source: "Slagerij De Roo (Gentbrugge)", bg: "#E8E3D8", colors: { primary: "#8C1D0D", secondary: "#1A1A1A", accent: "#C47B2B", dark: "#0F0F0F" } },
+      { id: 3, name: "Coiffure Marcel 1930", source: "Kapperszaak Art Deco (Oostende)", bg: "#1A1C1E", colors: { primary: "#E5A93C", secondary: "#366B5C", accent: "#D96B43", dark: "#0B0C0D" } },
+      { id: 4, name: "Station Tegelmozaïek", source: "Gent-Sint-Pieters (Gent)", bg: "#E6E8E3", colors: { primary: "#2D5C43", secondary: "#B84328", accent: "#D6A338", dark: "#1A2620" } },
+      { id: 5, name: "Cinema Capitole Neon", source: "Gevel-Neon Lightbox (Gent)", bg: "#0D111A", colors: { primary: "#00E5FF", secondary: "#FF0055", accent: "#FFE600", dark: "#05070B" } }
+    ];
 
-// ==========================================
-// 2. MODULAIRE TEGEL TYPES (20 BOUWSTEEN VORMEN)
-// ==========================================
-type TileType = 
-  | 'rect'          // Vlakke tegel
-  | 'arc-tl'        // Kwartcirkel Boven-Links
-  | 'arc-tr'        // Kwartcirkel Boven-Rechts
-  | 'arc-bl'        // Kwartcirkel Onder-Links
-  | 'arc-br'        // Kwartcirkel Onder-Rechts
-  | 'ring'          // Neon ring
-  | 'circle-eye'    // Hol oog
-  | 'stripe-diag-1' // Diagonale arceering 1
-  | 'stripe-diag-2' // Diagonale arceering 2
-  | 'pill-horiz'    // Horizontale pil
-  | 'pill-vert'     // Verticale pil
-  | 'swash-r';      // Krul / Swash
+    const generateTiles = (char, styleId) => {
+      const seed = char.charCodeAt(0) + styleId;
+      const types = ['rect', 'arc-tl', 'arc-tr', 'arc-bl', 'arc-br', 'ring', 'circle-eye', 'stripe-diag-1', 'pill-horiz', 'pill-vert'];
+      const colorKeys = ['primary', 'secondary', 'accent', 'dark'];
 
-interface TileData {
-  type: TileType;
-  colorKey: 'primary' | 'secondary' | 'accent' | 'dark';
-  rotation: number;
-}
-
-// Berekent de tegel-verdeling op basis van het karakter en de stijl
-const generateCharacterTiles = (char: string, styleId: number): TileData[] => {
-  const seed = char.charCodeAt(0) + styleId;
-  const types: TileType[] = [
-    'rect', 'arc-tl', 'arc-tr', 'arc-bl', 'arc-br', 
-    'ring', 'circle-eye', 'stripe-diag-1', 'stripe-diag-2', 'pill-horiz', 'pill-vert'
-  ];
-  const colorKeys: ('primary' | 'secondary' | 'accent' | 'dark')[] = [
-    'primary', 'secondary', 'accent', 'dark'
-  ];
-
-  return Array.from({ length: 16 }).map((_, i) => ({
-    type: types[(seed + i * 3) % types.length],
-    colorKey: colorKeys[(seed + i) % colorKeys.length],
-    rotation: ((seed + i) % 4) * 90
-  }));
-};
-
-// SVG Renderer voor de losse vorm-modules
-const TileSVG: React.FC<{ type: TileType; color: string; rotation: number }> = ({ type, color, rotation }) => {
-  const size = 40;
-  const half = size / 2;
-
-  const renderShape = () => {
-    switch (type) {
-      case 'rect':
-        return <rect width={size} height={size} fill={color} rx={2} />;
-      case 'arc-tl':
-        return <path d={`M 0 ${size} A ${size} ${size} 0 0 1 ${size} 0 L 0 0 Z`} fill={color} />;
-      case 'arc-tr':
-        return <path d={`M 0 0 A ${size} ${size} 0 0 1 ${size} ${size} L ${size} 0 Z`} fill={color} />;
-      case 'arc-bl':
-        return <path d={`M 0 0 A ${size} ${size} 0 0 0 ${size} ${size} L 0 ${size} Z`} fill={color} />;
-      case 'arc-br':
-        return <path d={`M ${size} 0 A ${size} ${size} 0 0 1 0 ${size} L ${size} ${size} Z`} fill={color} />;
-      case 'ring':
-        return (
-          <g>
-            <circle cx={half} cy={half} r={half} fill="none" stroke={color} strokeWidth={size * 0.25} />
-            <circle cx={half} cy={half} r={size * 0.2} fill={color} />
-          </g>
-        );
-      case 'circle-eye':
-        return (
-          <g>
-            <rect width={size} height={size} fill={color} rx={half} />
-            <circle cx={half} cy={half} r={size * 0.25} fill="#FFFFFF" opacity={0.9} />
-          </g>
-        );
-      case 'stripe-diag-1':
-        return (
-          <g>
-            <line x1="0" y1="0" x2={size} y2={size} stroke={color} strokeWidth={size * 0.25} strokeLinecap="round" />
-            <line x1="0" y1={half} x2={half} y2={size} stroke={color} strokeWidth={size * 0.15} />
-          </g>
-        );
-      case 'pill-horiz':
-        return <rect x={0} y={size * 0.25} width={size} height={half} rx={size * 0.25} fill={color} />;
-      case 'pill-vert':
-        return <rect x={size * 0.25} y={0} width={half} height={size} rx={size * 0.25} fill={color} />;
-      default:
-        return <rect width={size} height={size} fill={color} rx={4} />;
-    }
-  };
-
-  return (
-    <svg 
-      width="100%" 
-      height="100%" 
-      viewBox={`0 0 ${size} ${size}`} 
-      style={{ transform: `rotate(${rotation}deg)`, transition: 'transform 0.4s ease' }}
-    >
-      {renderShape()}
-    </svg>
-  );
-};
-
-// ==========================================
-// 3. HOOFD KINETIC TYPO MATRIX COMPONENT
-// ==========================================
-export default function App() {
-  const [styleIndex, setStyleIndex] = useState<number>(0);
-  const [matrixText, setMatrixText] = useState<string[]>(['N', 'E', 'V', 'E', 'R', 'F', 'I', 'N', 'I', 'S', 'H', 'E', 'D']);
-  const [hoveredCharIndex, setHoveredCharIndex] = useState<number | null>(null);
-  const [showGridLines, setShowGridLines] = useState<boolean>(true);
-
-  const currentStyle = HISTORIC_STYLES[styleIndex];
-
-  // Druk op de spatiebalk om alle tegels in de matrix live te remixen
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length);
-      }
+      return Array.from({ length: 16 }).map((_, i) => ({
+        type: types[(seed + i * 3) % types.length],
+        colorKey: colorKeys[(seed + i) % colorKeys.length],
+        rotation: ((seed + i) % 4) * 90
+      }));
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
-  return (
-    <div 
-      className="min-h-screen w-full transition-colors duration-700 ease-in-out font-mono flex flex-col justify-between select-none p-6 md:p-12"
-      style={{ backgroundColor: currentStyle.bg, color: currentStyle.colors.dark }}
-    >
-      {/* ── HEADER ── */}
-      <header className="flex justify-between items-center border-b border-current/10 pb-6">
-        <div className="flex items-center space-x-3">
-          <span className="font-extrabold tracking-widest text-xl">NEVER FINISHED</span>
-          <span className="text-[10px] px-2 py-0.5 rounded border border-current opacity-60">ED.01</span>
-        </div>
-        <div className="text-xs tracking-wider uppercase opacity-70">
-          <span>KINETIC TYPO MATRIX — {currentStyle.name}</span>
-        </div>
-      </header>
+    const TileSVG = ({ type, color, rotation }) => {
+      const size = 40;
+      const half = size / 2;
 
-      {/* ── KINETIC MATRIX SPEELVELD ── */}
-      <main className="my-auto py-12 flex flex-col items-center justify-center">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6 max-w-6xl w-full">
-          {matrixText.map((char, index) => {
-            const isHovered = hoveredCharIndex === index;
-            const tiles = generateCharacterTiles(char, styleIndex + (isHovered ? 99 : 0));
-
+      const renderShape = () => {
+        switch (type) {
+          case 'rect': return <rect width={size} height={size} fill={color} rx={2} />;
+          case 'arc-tl': return <path d={`M 0 ${size} A ${size} ${size} 0 0 1 ${size} 0 L 0 0 Z`} fill={color} />;
+          case 'arc-tr': return <path d={`M 0 0 A ${size} ${size} 0 0 1 ${size} ${size} L ${size} 0 Z`} fill={color} />;
+          case 'arc-bl': return <path d={`M 0 0 A ${size} ${size} 0 0 0 ${size} ${size} L 0 ${size} Z`} fill={color} />;
+          case 'arc-br': return <path d={`M ${size} 0 A ${size} ${size} 0 0 1 0 ${size} L ${size} ${size} Z`} fill={color} />;
+          case 'ring':
             return (
-              <div
-                key={index}
-                onMouseEnter={() => setHoveredCharIndex(index)}
-                onMouseLeave={() => setHoveredCharIndex(null)}
-                className={`relative aspect-square p-3 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col items-center justify-center ${
-                  isHovered 
-                    ? 'scale-110 shadow-2xl bg-white/40 border-current z-10' 
-                    : 'border-current/10 bg-white/10 hover:border-current/30'
-                }`}
-              >
-                {/* MODULAIR TEGEL RASTER (4x4 MODULES PER LETTER) */}
-                <div className={`grid grid-cols-4 gap-1 w-full h-full ${showGridLines ? 'divide-x divide-y divide-black/5' : ''}`}>
-                  {tiles.map((tile, tIdx) => (
-                    <div key={tIdx} className="w-full h-full flex items-center justify-center">
-                      <TileSVG 
-                        type={tile.type} 
-                        color={currentStyle.colors[tile.colorKey]} 
-                        rotation={tile.rotation + (isHovered ? 90 : 0)} 
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* REFERENTIE LETTER ONDERIN */}
-                <span className="absolute -bottom-5 text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                  {char}
-                </span>
-              </div>
+              <g>
+                <circle cx={half} cy={half} r={half} fill="none" stroke={color} strokeWidth={size * 0.25} />
+                <circle cx={half} cy={half} r={size * 0.2} fill={color} />
+              </g>
             );
-          })}
-        </div>
-      </main>
+          case 'circle-eye':
+            return (
+              <g>
+                <rect width={size} height={size} fill={color} rx={half} />
+                <circle cx={half} cy={half} r={size * 0.25} fill="#FFFFFF" opacity={0.9} />
+              </g>
+            );
+          case 'pill-horiz': return <rect x={0} y={size * 0.25} width={size} height={half} rx={size * 0.25} fill={color} />;
+          case 'pill-vert': return <rect x={size * 0.25} y={0} width={half} height={size} rx={size * 0.25} fill={color} />;
+          default: return <rect width={size} height={size} fill={color} rx={2} />;
+        }
+      };
 
-      {/* ── FOOTER BEDIENING ── */}
-      <footer className="border-t border-current/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-        
-        {/* HUIDIGE STIJL INFO */}
-        <div className="flex items-center space-x-3 text-xs">
-          <span className="font-bold">STIJL {String(currentStyle.id).padStart(2, '0')}/06:</span>
-          <span className="opacity-70">{currentStyle.source}</span>
-        </div>
+      return (
+        <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ transform: `rotate(${rotation}deg)`, transition: 'transform 0.4s ease' }}>
+          {renderShape()}
+        </svg>
+      );
+    };
 
-        {/* BEDIENINGS KNOPPEN */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length)}
-            className="px-4 py-2 rounded-lg border border-current text-xs font-bold flex items-center space-x-2 hover:bg-black/5 transition-all active:scale-95"
-          >
-            <Shuffle size={14} />
-            <span>DRUK SPATIEBALK OM TE REMIXEN</span>
-          </button>
+    function App() {
+      const [styleIndex, setStyleIndex] = React.useState(0);
+      const [hoveredIndex, setHoveredIndex] = React.useState(null);
+      const text = ['N', 'E', 'V', 'E', 'R', 'F', 'I', 'N', 'I', 'S', 'H', 'E', 'D'];
+      const currentStyle = HISTORIC_STYLES[styleIndex];
 
-          <button
-            onClick={() => setShowGridLines(!showGridLines)}
-            className={`p-2 rounded-lg border transition-all ${
-              showGridLines ? 'bg-black text-white border-black' : 'border-current opacity-60'
-            }`}
-          >
-            <Grid size={16} />
-          </button>
+      React.useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.code === 'Space') {
+            e.preventDefault();
+            setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length);
+          }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, []);
+
+      return (
+        <div className="min-h-screen p-6 md:p-12 flex flex-col justify-between transition-colors duration-700" style={{ backgroundColor: currentStyle.bg, color: currentStyle.colors.dark }}>
+          
+          <header className="flex justify-between items-center border-b border-current/10 pb-6">
+            <div className="flex items-center space-x-3">
+              <span className="font-extrabold tracking-widest text-xl">NEVER FINISHED</span>
+              <span className="text-[10px] px-2 py-0.5 rounded border border-current opacity-60">ED.01</span>
+            </div>
+            <div className="text-xs uppercase tracking-wider opacity-70">
+              {currentStyle.name}
+            </div>
+          </header>
+
+          <main className="my-auto py-12 flex justify-center">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6 max-w-6xl w-full">
+              {text.map((char, index) => {
+                const isHovered = hoveredIndex === index;
+                const tiles = generateTiles(char, styleIndex + (isHovered ? 99 : 0));
+
+                return (
+                  <div
+                    key={index}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    className={`relative aspect-square p-3 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col items-center justify-center ${
+                      isHovered ? 'scale-110 shadow-2xl bg-white/40 border-current z-10' : 'border-current/10 bg-white/10'
+                    }`}
+                  >
+                    <div className="grid grid-cols-4 gap-1 w-full h-full">
+                      {tiles.map((tile, tIdx) => (
+                        <div key={tIdx} className="w-full h-full">
+                          <TileSVG type={tile.type} color={currentStyle.colors[tile.colorKey]} rotation={tile.rotation + (isHovered ? 90 : 0)} />
+                        </div>
+                      ))}
+                    </div>
+                    <span className="absolute -bottom-5 text-[10px] font-bold opacity-40 uppercase">{char}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </main>
+
+          <footer className="border-t border-current/10 pt-6 flex justify-between items-center text-xs">
+            <div>
+              <span className="font-bold">STIJL 0{currentStyle.id}/05: </span>
+              <span className="opacity-70">{currentStyle.source}</span>
+            </div>
+            <button
+              onClick={() => setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length)}
+              className="px-4 py-2 rounded-lg border border-current font-bold hover:bg-black/5 transition-all"
+            >
+              DRUK SPATIEBALK OM TE REMIXEN
+            </button>
+          </footer>
+
         </div>
-      </footer>
-    </div>
-  );
-}
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
