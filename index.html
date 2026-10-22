@@ -1,339 +1,303 @@
-
 <!doctype html>
 <html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NEVER FINISHED — Modulaire Straat-Typografie</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>STREET / TYPO — Never Finished Archief</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=UnifrakturMaguntia&display=swap');
+
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: #f4f1ea; color: #111; font-family: 'Space Mono', monospace, sans-serif; }
-    
-    /* HERO & VALLENDE KAARTEN (ZOALS FLORENCE) */
-    .hero {
+    body { 
+      margin: 0; 
+      background: #f0eee6; 
+      color: #000; 
+      font-family: 'Space Mono', monospace, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* GRID ESTHETIEK UIT JOUW WIREFRAME */
+    .grid-border {
+      border: 2px solid #000;
+    }
+    .grid-cell {
+      border-right: 1px solid #000;
+      border-bottom: 1px solid #000;
+    }
+
+    /* HERO SECTION MET MATRIX GRID */
+    .hero-container {
+      width: 100vw;
       height: 100svh;
-      min-height: 480px;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      position: relative;
-      background: #f4f1ea;
-    }
-    .scene {
-      position: relative;
-      width: min(100vw, 140svh);
-      aspect-ratio: 841.89/595.276;
-      overflow: hidden;
+      min-height: 600px;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: #f0eee6;
+      padding: 16px;
     }
-    
-    /* VALLENDE TYPO KAARTEN */
-    .fall {
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: 70px repeat(5, 1fr);
+      width: 100%;
+      height: 100%;
+      border: 2px solid #000;
+      position: relative;
+      background: #f0eee6;
+    }
+
+    /* VALLENDE TYPO KAARTEN IN DE HERO */
+    .fall-letter {
       position: absolute;
-      width: 22%;
-      aspect-ratio: 1/1;
+      width: clamp(100px, 14vw, 160px);
+      aspect-ratio: 1 / 1;
       left: var(--x);
-      top: 0;
+      top: -150px;
       opacity: 0;
-      pointer-events: auto;
-      border: 1px solid #111;
-      padding: 12px;
+      border: 2px solid #000;
+      padding: 8px;
       cursor: pointer;
-      animation: fall var(--speed) cubic-bezier(.38,.02,.67,.8) var(--delay) infinite;
+      animation: fallLetters var(--speed) cubic-bezier(.38,.02,.67,.8) var(--delay) infinite;
       transform-origin: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      background: white;
-      border-radius: 8px;
+      background: #f0eee6;
+      box-shadow: 4px 4px 0px #000;
+      z-index: 5;
     }
-    .fall:after {
+
+    .fall-letter::after {
       content: attr(data-label);
       position: absolute;
-      bottom: -24px;
+      bottom: -22px;
       left: 0;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: bold;
       letter-spacing: 0.05em;
-      color: #111;
+      background: #000;
+      color: #fff;
+      padding: 2px 6px;
+      white-space: nowrap;
     }
 
-    @keyframes fall {
-      0% { opacity: 0; transform: translateY(-140%) rotate(var(--r)) scale(.8); }
-      8% { opacity: 1; }
-      60% { opacity: 1; transform: translateY(160%) rotate(calc(var(--r) * -.5)) scale(.9); }
-      85% { opacity: 1; transform: translateY(280%) rotate(8deg) scale(.5); }
-      97%, 100% { opacity: 0; transform: translateY(310%) rotate(15deg) scale(0); }
+    @keyframes fallLetters {
+      0% { opacity: 0; transform: translateY(0) rotate(var(--r)) scale(.8); }
+      10% { opacity: 1; }
+      60% { opacity: 1; transform: translateY(65svh) rotate(calc(var(--r) * -.5)) scale(1); }
+      85% { opacity: 1; transform: translateY(105svh) rotate(12deg) scale(.6); }
+      98%, 100% { opacity: 0; transform: translateY(115svh) rotate(20deg) scale(0); }
     }
 
-    .fall:hover { animation-play-state: paused; transform: scale(1.08) !important; z-index: 10; }
+    .fall-letter:hover {
+      animation-play-state: paused;
+      transform: scale(1.12) rotate(0deg) !important;
+      z-index: 20;
+      background: #fff;
+    }
 
-    /* CATALOGUS SECTIE */
-    .catalogue {
-      background: #e8e3d8;
-      min-height: 100svh;
-      padding: 6vw 5vw 5vw;
-      border-top: 1px solid #111;
+    /* GOTISCH FONT AKCENT VOOR DE T IN TYPO */
+    .font-gothic {
+      font-family: 'UnifrakturMaguntia', serif;
     }
-    .topline {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      opacity: 0.7;
+
+    /* CATALOGUS SECTIE (DRIE EDITIES) */
+    .catalogue-section {
+      border-top: 2px solid #000;
+      background: #e6e3d5;
+      padding: 60px 24px;
     }
-    .catalogue h1 {
-      font-weight: 700;
-      font-size: clamp(48px, 10vw, 140px);
-      letter-spacing: -.05em;
-      margin: 4vw 0 4vw;
-      line-height: .85;
-      text-transform: uppercase;
-    }
-    .edition {
+
+    .edition-row {
       display: grid;
-      grid-template-columns: 80px 1fr 320px;
+      grid-template-columns: 100px 1fr 340px;
+      gap: 32px;
       align-items: center;
-      gap: 3vw;
-      text-align: left;
-      width: 100%;
-      padding: 32px 0;
-      border: 0;
-      border-top: 1px solid #111;
-      background: none;
-      color: inherit;
+      padding: 40px 0;
+      border-bottom: 2px solid #000;
     }
-    .edition:last-of-type { border-bottom: 1px solid #111; }
-    .number { font-size: clamp(24px, 3vw, 48px); align-self: start; font-weight: bold; }
-    .edition h2 { font-size: clamp(28px, 4vw, 60px); font-weight: 700; letter-spacing: -.03em; margin: 0 0 12px; }
-    .edition p { font-size: 13px; margin: 0; line-height: 1.6; opacity: 0.8; max-width: 500px; }
-    
-    .preview {
-      position: relative;
-      overflow: hidden;
-      aspect-ratio: 1/1;
-      background: white;
-      border: 1px solid #111;
-      border-radius: 8px;
-      padding: 12px;
+
+    .edition-row:first-child {
+      border-top: 2px solid #000;
+    }
+
+    @media (max-width: 850px) {
+      .hero-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .edition-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div id="root"></div>
+  <div id="app"></div>
 
-  <script type="text/babel">
-    // HET MODULAIRE 20-FORMEN SYSTEEM VOOR HISTORISCHE TYPOGRAFIE
-    const EDITIONS = [
+  <script>
+    // DE 3 HOOFDEDITIES (TYPO, BEELD, HANDELING)
+    const editions = [
       {
-        num: "01",
-        title: "CAFÉ ART NOUVEAU",
-        source: "In Den Goeden Koop (Gent)",
-        desc: "Organische, vloeibare tegelvormen gebaseerd op Art Nouveau glas-in-lood en sierlijke gevelletters.",
-        colors: { primary: "#A63D2B", secondary: "#1B5238", accent: "#D9A036", bg: "#F4F1EA" },
+        num: "ED.01",
+        title: "TYPO",
+        subtitle: "Het Modulaire Tegelraster",
+        desc: "Onderzoek naar kinetische, modulaire straat-typografie. Opgebouwd uit een vaste bibliotheek van 20 geometrische tegelvormen (bogen, neon-ringen, arceeringen, spiegeling) gebaseerd op Belgische gevels.",
+        color: "#A63D2B",
+        bg: "#F4F1EA",
         char: "V"
       },
       {
-        num: "02",
-        title: "BEENHOUWERIJ BLOCK",
-        source: "Slagerij De Roo (Gentbrugge)",
-        desc: "Zware, ceramische geveltegels en bloktypografie uit ambachtelijke Belgische beenhouwerijen.",
-        colors: { primary: "#8C1D0D", secondary: "#1A1A1A", accent: "#C47B2B", bg: "#E8E3D8" },
+        num: "ED.02",
+        title: "BEELD",
+        subtitle: "Fotografisch Archief & Vacuüm",
+        desc: "Visuele documentatie van verdwijnende Belgische winkelpuien, beenhouwerijen, oude cafés en vergeten tilework. Onderdeel van het wekelijkse 'Never Finished' vacuüm-archief.",
+        color: "#1B5238",
+        bg: "#E8E3D8",
         char: "A"
       },
       {
-        num: "03",
-        title: "STATION TEGELMOZAÏEK",
-        source: "Gent-Sint-Pieters (Gent)",
-        desc: "Infrastructuur-typografie opgebouwd uit vierkante, strakke keramische tegelmatrices.",
-        colors: { primary: "#2D5C43", secondary: "#B84328", accent: "#D6A338", bg: "#E6E8E3" },
+        num: "ED.03",
+        title: "HANDELING",
+        subtitle: "Tactiel & Physical Interaction",
+        desc: "De fysieke actie van het verpakken, vacumeren en bouwen van ruimtelijke typografische installaties. Typografie als tastbaar object en materiaalexperiment.",
+        color: "#D9A036",
+        bg: "#E6E8E3",
         char: "8"
-      },
-      {
-        num: "04",
-        title: "CINEMA CAPITOLE",
-        source: "Gevel-Neon Lightbox (Gent)",
-        desc: "Lichtarchitectuur met holle ogen, concentrische neon-ringen en transparante armatuur-modules.",
-        colors: { primary: "#00E5FF", secondary: "#FF0055", accent: "#FFE600", bg: "#0D111A" },
-        char: "R"
       }
     ];
 
-    // GENERATOR VOOR DE RASTER-TEGELS PER LETTER
-    const generateTiles = (char, editionIdx) => {
-      const seed = char.charCodeAt(0) + editionIdx * 7;
-      const types = ['rect', 'arc-tl', 'arc-tr', 'arc-bl', 'arc-br', 'ring', 'circle-eye', 'pill-horiz', 'pill-vert'];
-      const colorKeys = ['primary', 'secondary', 'accent'];
+    // MODULAIRE TEGEL GENERATOR (20-FORMEN SYSTEEM)
+    function generateModularGrid(primaryColor) {
+      let html = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; width: 100%; height: 100%;">';
+      const shapes = [
+        'border-radius: 100% 0 0 0;', // 1/4 arc
+        'border-radius: 0 100% 0 0;',
+        'border-radius: 50%;', // ring/circle
+        'border-radius: 0;', // solid rect
+        'clip-path: polygon(0 0, 100% 0, 0 100%);', // diagonal
+        'border-radius: 20px;' // pill
+      ];
+      
+      const colors = [primaryColor, '#111111', '#D9A036', '#E6E3D5'];
 
-      return Array.from({ length: 16 }).map((_, i) => ({
-        type: types[(seed + i * 3) % types.length],
-        colorKey: colorKeys[(seed + i) % colorKeys.length],
-        rotation: ((seed + i) % 4) * 90
-      }));
-    };
-
-    // SVG TILE RENDERER
-    const TileSVG = ({ type, color, rotation }) => {
-      const size = 30;
-      const half = size / 2;
-
-      const renderShape = () => {
-        switch (type) {
-          case 'rect': return <rect width={size} height={size} fill={color} rx={2} />;
-          case 'arc-tl': return <path d={`M 0 ${size} A ${size} ${size} 0 0 1 ${size} 0 L 0 0 Z`} fill={color} />;
-          case 'arc-tr': return <path d={`M 0 0 A ${size} ${size} 0 0 1 ${size} ${size} L ${size} 0 Z`} fill={color} />;
-          case 'arc-bl': return <path d={`M 0 0 A ${size} ${size} 0 0 0 ${size} ${size} L 0 ${size} Z`} fill={color} />;
-          case 'arc-br': return <path d={`M ${size} 0 A ${size} ${size} 0 0 1 0 ${size} L ${size} ${size} Z`} fill={color} />;
-          case 'ring':
-            return (
-              <g>
-                <circle cx={half} cy={half} r={half} fill="none" stroke={color} strokeWidth={size * 0.25} />
-                <circle cx={half} cy={half} r={size * 0.2} fill={color} />
-              </g>
-            );
-          case 'circle-eye':
-            return (
-              <g>
-                <rect width={size} height={size} fill={color} rx={half} />
-                <circle cx={half} cy={half} r={size * 0.25} fill="#FFFFFF" />
-              </g>
-            );
-          case 'pill-horiz': return <rect x={0} y={size * 0.25} width={size} height={half} rx={size * 0.25} fill={color} />;
-          case 'pill-vert': return <rect x={size * 0.25} y={0} width={half} height={size} rx={size * 0.25} fill={color} />;
-          default: return <rect width={size} height={size} fill={color} rx={2} />;
-        }
-      };
-
-      return (
-        <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ transform: `rotate(${rotation}deg)` }}>
-          {renderShape()}
-        </svg>
-      );
-    };
-
-    function App() {
-      return (
-        <div>
-          {/* HERO SECTIE MET VALLENDE MODULAIRE TEGEL-EDITIES */}
-          <section className="hero" id="start">
-            <div className="absolute top-6 left-8 font-bold text-xs tracking-widest uppercase z-10">
-              NEVER FINISHED — ED.01
-            </div>
-            <div className="absolute top-6 right-8 text-xs tracking-widest uppercase opacity-60 z-10">
-              STRAAT-TYPOGRAFIE MATRIX
-            </div>
-
-            <div className="scene">
-              <div className="text-center z-0 opacity-15">
-                <h1 className="text-8xl md:text-9xl font-extrabold tracking-tighter">NEVER<br/>FINISHED</h1>
-              </div>
-
-              {/* VALLENDE TEGEL-KAARTEN (GEÏNSPIREERD OP FLORENCE'S CODE) */}
-              {EDITIONS.map((ed, idx) => {
-                const tiles = generateTiles(ed.char, idx);
-                const positions = [
-                  { x: "15%", r: "-12deg", speed: "11s", delay: "0s" },
-                  { x: "38%", r: "8deg", speed: "13s", delay: "2s" },
-                  { x: "62%", r: "-6deg", speed: "10s", delay: "1.5s" },
-                  { x: "80%", r: "14deg", speed: "12s", delay: "0.5s" }
-                ];
-                const pos = positions[idx % positions.length];
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="fall"
-                    data-label={`ED.0${idx + 1} — ${ed.title}`}
-                    style={{
-                      '--x': pos.x,
-                      '--r': pos.r,
-                      '--speed': pos.speed,
-                      '--delay': pos.delay,
-                      backgroundColor: ed.colors.bg
-                    }}
-                  >
-                    <div className="grid grid-cols-4 gap-1 w-full h-full">
-                      {tiles.map((tile, tIdx) => (
-                        <TileSVG
-                          key={tIdx}
-                          type={tile.type}
-                          color={ed.colors[tile.colorKey]}
-                          rotation={tile.rotation}
-                        />
-                      ))}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            <a href="#catalogue" className="absolute bottom-8 text-xs font-bold uppercase tracking-widest flex items-center space-x-2">
-              <span>Scroll naar catalogus</span>
-              <span>↓</span>
-            </a>
-          </section>
-
-          {/* CATALOGUS SECTIE */}
-          <section className="catalogue" id="catalogue">
-            <div className="topline">
-              <span>NEVER FINISHED / ARCHIEF</span>
-              <span>HISTORISCHE BELGISCHE GEVELS</span>
-            </div>
-
-            <h1>EDITIES</h1>
-
-            <div>
-              {EDITIONS.map((ed, idx) => {
-                const tiles = generateTiles(ed.char, idx);
-
-                return (
-                  <div key={idx} className="edition">
-                    <span className="number">{ed.num}</span>
-                    <div>
-                      <h2>{ed.title}</h2>
-                      <p>{ed.desc}</p>
-                      <span className="inline-block mt-4 text-xs font-bold border-b border-current pb-0.5">
-                        BRON: {ed.source}
-                      </span>
-                    </div>
-
-                    {/* PREVIEW VAN HET MODULAIRE RASTER */}
-                    <div className="preview" style={{ backgroundColor: ed.colors.bg }}>
-                      <div className="grid grid-cols-4 gap-1 w-full h-full">
-                        {tiles.map((tile, tIdx) => (
-                          <TileSVG
-                            key={tIdx}
-                            type={tile.type}
-                            color={ed.colors[tile.colorKey]}
-                            rotation={tile.rotation}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <footer className="pt-16 flex justify-between text-xs opacity-60 uppercase tracking-widest">
-              <span>LUCA SINT-LUCAS GENT</span>
-              <span>2026–2027</span>
-            </footer>
-          </section>
-        </div>
-      );
+      for(let i = 0; i < 16; i++) {
+        let shape = shapes[i % shapes.length];
+        let bg = colors[(i * 3) % colors.length];
+        html += `<div style="background: ${bg}; ${shape} aspect-ratio: 1; width: 100%;"></div>`;
+      }
+      html += '</div>';
+      return html;
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    // BOUW DE COMPLEET NIEUWE INTERFACE
+    function renderApp() {
+      let html = `
+        <!-- HERO CONTAINER MET JOUW GRID-WIREFRAME -->
+        <div class="hero-container">
+          <div class="hero-grid">
+            
+            <!-- HEADER BARS (ZOALS IN JOUW SCHETS) -->
+            <div class="grid-cell p-3 flex flex-col justify-between font-bold text-xs bg-[#f0eee6]">
+              <div>STREET<br>/ TYPO</div>
+              <div class="text-[9px] opacity-60 font-normal">VELD ONDERZOEK 2026-27</div>
+            </div>
+
+            <div class="grid-cell p-3 font-bold text-xs flex items-center justify-center text-center bg-[#f0eee6]">
+              ARCHIEF VAN GEVONDEN TYPO
+            </div>
+
+            <div class="grid-cell p-3 font-bold text-xs flex items-center justify-center bg-[#f0eee6]">
+              INDEX
+            </div>
+
+            <div class="grid-cell p-3 font-bold text-xs flex items-center justify-center bg-[#f0eee6] col-span-3 sm:col-span-3">
+              TAXONOMY
+            </div>
+
+            <!-- LEGE GRID VAKKEN WAARIN DE TYPO VLIEGT -->
+            ${Array.from({ length: 24 }).map((_, i) => `<div class="grid-cell"></div>`).join('')}
+
+            <!-- CENTRALE DYNAMISCHE TITEL (UIT JOUW PROTOTYPE) -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+              <div class="flex items-center space-x-2 text-5xl md:text-8xl font-extrabold tracking-tight">
+                <span>STREET</span>
+                <span class="font-gothic text-6xl md:text-9xl font-normal px-1">T</span>
+                <span>YPO</span>
+              </div>
+              <div class="text-4xl md:text-7xl font-extrabold tracking-wider mt-1">
+                NEVER FINISHED
+              </div>
+            </div>
+
+            <!-- RECHTSONDER: TYPO VAN DE WEEK (UIT JOUW WIREFRAME) -->
+            <div class="absolute bottom-0 right-0 w-36 h-36 bg-[#f0eee6] border-t-2 border-l-2 border-black p-2 flex flex-col justify-between z-20">
+              <div class="text-[9px] font-bold uppercase tracking-widest opacity-70">
+                TYPO VAN DE WEEK:
+              </div>
+              <div class="text-5xl font-extrabold text-right font-mono">
+                A
+              </div>
+            </div>
+
+            <!-- VALLENDE KINETISCHE TYPO-KAARTEN -->
+            ${editions.map((ed, idx) => {
+              const pos = [
+                { x: "18%", r: "-10deg", speed: "10s", delay: "0s" },
+                { x: "42%", r: "6deg", speed: "12s", delay: "2.5s" },
+                { x: "68%", r: "-8deg", speed: "11s", delay: "1s" }
+              ][idx];
+
+              return `
+                <div 
+                  className="fall-letter" 
+                  data-label="${ed.num} — ${ed.title}"
+                  style="--x: ${pos.x}; --r: ${pos.r}; --speed: ${pos.speed}; --delay: ${pos.delay}; background: ${ed.bg};"
+                >
+                  ${generateModularGrid(ed.color)}
+                </div>
+              `;
+            }).join('')}
+
+          </div>
+        </div>
+
+        <!-- CATALOGUS SECTIE (DRIE EDITIES: TYPO, BEELD, HANDELING) -->
+        <section class="catalogue-section" id="catalogue">
+          <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest mb-12 pb-4 border-b-2 border-black">
+            <span>NEVER FINISHED / DRIELUIK</span>
+            <span>ED.01 — ED.03</span>
+          </div>
+
+          <div class="space-y-4">
+            ${editions.map((ed) => `
+              <div class="edition-row">
+                <div class="text-3xl font-extrabold font-mono">${ed.num}</div>
+                <div>
+                  <div class="text-xs font-bold tracking-widest uppercase opacity-60 mb-1">${ed.subtitle}</div>
+                  <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">${ed.title}</h2>
+                  <p class="text-xs leading-relaxed max-w-xl opacity-80">${ed.desc}</p>
+                </div>
+                <div class="w-full aspect-square border-2 border-black p-3" style="background: ${ed.bg}">
+                  ${generateModularGrid(ed.color)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <footer class="mt-20 pt-6 border-t-2 border-black flex justify-between text-xs font-bold uppercase tracking-widest">
+            <span>LUCA SINT-LUCAS GENT</span>
+            <span>2026–2027</span>
+          </footer>
+        </section>
+      `;
+
+      document.getElementById('app').innerHTML = html;
+    }
+
+    renderApp();
   </script>
 </body>
 </html>
