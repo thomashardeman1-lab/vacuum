@@ -1,52 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEVER FINISHED — Kinetic Typo Engine</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEVER FINISHED — Modulaire Straat-Typografie</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes continuousWave {
-      0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-4px) rotate(3deg); }
-      100% { transform: translateY(0px) rotate(0deg); }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f4f1ea; color: #111; font-family: 'Space Mono', monospace, sans-serif; }
+    
+    /* HERO & VALLENDE KAARTEN (ZOALS FLORENCE) */
+    .hero {
+      height: 100svh;
+      min-height: 480px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+      background: #f4f1ea;
     }
-    .tile-animated {
-      animation: continuousWave 4s ease-in-out infinite;
+    .scene {
+      position: relative;
+      width: min(100vw, 140svh);
+      aspect-ratio: 841.89/595.276;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* VALLENDE TYPO KAARTEN */
+    .fall {
+      position: absolute;
+      width: 22%;
+      aspect-ratio: 1/1;
+      left: var(--x);
+      top: 0;
+      opacity: 0;
+      pointer-events: auto;
+      border: 1px solid #111;
+      padding: 12px;
+      cursor: pointer;
+      animation: fall var(--speed) cubic-bezier(.38,.02,.67,.8) var(--delay) infinite;
+      transform-origin: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      background: white;
+      border-radius: 8px;
+    }
+    .fall:after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: -24px;
+      left: 0;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      color: #111;
+    }
+
+    @keyframes fall {
+      0% { opacity: 0; transform: translateY(-140%) rotate(var(--r)) scale(.8); }
+      8% { opacity: 1; }
+      60% { opacity: 1; transform: translateY(160%) rotate(calc(var(--r) * -.5)) scale(.9); }
+      85% { opacity: 1; transform: translateY(280%) rotate(8deg) scale(.5); }
+      97%, 100% { opacity: 0; transform: translateY(310%) rotate(15deg) scale(0); }
+    }
+
+    .fall:hover { animation-play-state: paused; transform: scale(1.08) !important; z-index: 10; }
+
+    /* CATALOGUS SECTIE */
+    .catalogue {
+      background: #e8e3d8;
+      min-height: 100svh;
+      padding: 6vw 5vw 5vw;
+      border-top: 1px solid #111;
+    }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      opacity: 0.7;
+    }
+    .catalogue h1 {
+      font-weight: 700;
+      font-size: clamp(48px, 10vw, 140px);
+      letter-spacing: -.05em;
+      margin: 4vw 0 4vw;
+      line-height: .85;
+      text-transform: uppercase;
+    }
+    .edition {
+      display: grid;
+      grid-template-columns: 80px 1fr 320px;
+      align-items: center;
+      gap: 3vw;
+      text-align: left;
+      width: 100%;
+      padding: 32px 0;
+      border: 0;
+      border-top: 1px solid #111;
+      background: none;
+      color: inherit;
+    }
+    .edition:last-of-type { border-bottom: 1px solid #111; }
+    .number { font-size: clamp(24px, 3vw, 48px); align-self: start; font-weight: bold; }
+    .edition h2 { font-size: clamp(28px, 4vw, 60px); font-weight: 700; letter-spacing: -.03em; margin: 0 0 12px; }
+    .edition p { font-size: 13px; margin: 0; line-height: 1.6; opacity: 0.8; max-width: 500px; }
+    
+    .preview {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      background: white;
+      border: 1px solid #111;
+      border-radius: 8px;
+      padding: 12px;
     }
   </style>
 </head>
-<body class="bg-[#F4F1EA] text-[#1E1C1A] font-mono select-none overflow-x-hidden min-h-screen">
+<body>
 
   <div id="root"></div>
 
   <script type="text/babel">
-    const HISTORIC_STYLES = [
-      { id: 1, name: "Café Art Nouveau", source: "In Den Goeden Koop (Gent)", bg: "#F4F1EA", colors: { primary: "#A63D2B", secondary: "#1B5238", accent: "#D9A036", dark: "#1E1C1A" } },
-      { id: 2, name: "Beenhouwerij Block", source: "Slagerij De Roo (Gentbrugge)", bg: "#E8E3D8", colors: { primary: "#8C1D0D", secondary: "#1A1A1A", accent: "#C47B2B", dark: "#0F0F0F" } },
-      { id: 3, name: "Coiffure Marcel 1930", source: "Kapperszaak Art Deco (Oostende)", bg: "#1A1C1E", colors: { primary: "#E5A93C", secondary: "#366B5C", accent: "#D96B43", dark: "#0B0C0D" } },
-      { id: 4, name: "Station Tegelmozaïek", source: "Gent-Sint-Pieters (Gent)", bg: "#E6E8E3", colors: { primary: "#2D5C43", secondary: "#B84328", accent: "#D6A338", dark: "#1A2620" } },
-      { id: 5, name: "Cinema Capitole Neon", source: "Gevel-Neon Lightbox (Gent)", bg: "#0D111A", colors: { primary: "#00E5FF", secondary: "#FF0055", accent: "#FFE600", dark: "#05070B" } }
+    // HET MODULAIRE 20-FORMEN SYSTEEM VOOR HISTORISCHE TYPOGRAFIE
+    const EDITIONS = [
+      {
+        num: "01",
+        title: "CAFÉ ART NOUVEAU",
+        source: "In Den Goeden Koop (Gent)",
+        desc: "Organische, vloeibare tegelvormen gebaseerd op Art Nouveau glas-in-lood en sierlijke gevelletters.",
+        colors: { primary: "#A63D2B", secondary: "#1B5238", accent: "#D9A036", bg: "#F4F1EA" },
+        char: "V"
+      },
+      {
+        num: "02",
+        title: "BEENHOUWERIJ BLOCK",
+        source: "Slagerij De Roo (Gentbrugge)",
+        desc: "Zware, ceramische geveltegels en bloktypografie uit ambachtelijke Belgische beenhouwerijen.",
+        colors: { primary: "#8C1D0D", secondary: "#1A1A1A", accent: "#C47B2B", bg: "#E8E3D8" },
+        char: "A"
+      },
+      {
+        num: "03",
+        title: "STATION TEGELMOZAÏEK",
+        source: "Gent-Sint-Pieters (Gent)",
+        desc: "Infrastructuur-typografie opgebouwd uit vierkante, strakke keramische tegelmatrices.",
+        colors: { primary: "#2D5C43", secondary: "#B84328", accent: "#D6A338", bg: "#E6E8E3" },
+        char: "8"
+      },
+      {
+        num: "04",
+        title: "CINEMA CAPITOLE",
+        source: "Gevel-Neon Lightbox (Gent)",
+        desc: "Lichtarchitectuur met holle ogen, concentrische neon-ringen en transparante armatuur-modules.",
+        colors: { primary: "#00E5FF", secondary: "#FF0055", accent: "#FFE600", bg: "#0D111A" },
+        char: "R"
+      }
     ];
 
-    const generateTiles = (char, styleId, isHovered) => {
-      const seed = char.charCodeAt(0) + styleId;
-      const types = ['rect', 'arc-tl', 'arc-tr', 'arc-bl', 'arc-br', 'ring', 'circle-eye', 'stripe-diag-1', 'pill-horiz', 'pill-vert'];
-      const colorKeys = ['primary', 'secondary', 'accent', 'dark'];
+    // GENERATOR VOOR DE RASTER-TEGELS PER LETTER
+    const generateTiles = (char, editionIdx) => {
+      const seed = char.charCodeAt(0) + editionIdx * 7;
+      const types = ['rect', 'arc-tl', 'arc-tr', 'arc-bl', 'arc-br', 'ring', 'circle-eye', 'pill-horiz', 'pill-vert'];
+      const colorKeys = ['primary', 'secondary', 'accent'];
 
       return Array.from({ length: 16 }).map((_, i) => ({
-        type: types[(seed + i * (isHovered ? 5 : 3)) % types.length],
+        type: types[(seed + i * 3) % types.length],
         colorKey: colorKeys[(seed + i) % colorKeys.length],
-        rotation: (((seed + i) % 4) * 90) + (isHovered ? 180 : 0),
-        scale: isHovered ? 1.15 : 1
+        rotation: ((seed + i) % 4) * 90
       }));
     };
 
-    const TileSVG = ({ type, color, rotation, scale, animDelay }) => {
-      const size = 40;
+    // SVG TILE RENDERER
+    const TileSVG = ({ type, color, rotation }) => {
+      const size = 30;
       const half = size / 2;
 
       const renderShape = () => {
@@ -67,7 +202,7 @@
             return (
               <g>
                 <rect width={size} height={size} fill={color} rx={half} />
-                <circle cx={half} cy={half} r={size * 0.25} fill="#FFFFFF" opacity={0.9} />
+                <circle cx={half} cy={half} r={size * 0.25} fill="#FFFFFF" />
               </g>
             );
           case 'pill-horiz': return <rect x={0} y={size * 0.25} width={size} height={half} rx={size * 0.25} fill={color} />;
@@ -77,112 +212,122 @@
       };
 
       return (
-        <div 
-          className="w-full h-full tile-animated transition-all duration-500 ease-out"
-          style={{ animationDelay: `${animDelay}s` }}
-        >
-          <svg 
-            width="100%" 
-            height="100%" 
-            viewBox={`0 0 ${size} ${size}`} 
-            style={{ 
-              transform: `rotate(${rotation}deg) scale(${scale})`, 
-              transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.5s ease' 
-            }}
-          >
-            {renderShape()}
-          </svg>
-        </div>
+        <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ transform: `rotate(${rotation}deg)` }}>
+          {renderShape()}
+        </svg>
       );
     };
 
     function App() {
-      const [styleIndex, setStyleIndex] = React.useState(0);
-      const [hoveredIndex, setHoveredIndex] = React.useState(null);
-      const text = ['N', 'E', 'V', 'E', 'R', 'F', 'I', 'N', 'I', 'S', 'H', 'E', 'D'];
-      const currentStyle = HISTORIC_STYLES[styleIndex];
-
-      React.useEffect(() => {
-        const handleKeyDown = (e) => {
-          if (e.code === 'Space') {
-            e.preventDefault();
-            setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length);
-          }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-      }, []);
-
       return (
-        <div 
-          className="min-h-screen p-6 md:p-12 flex flex-col justify-between transition-colors duration-700 ease-in-out" 
-          style={{ backgroundColor: currentStyle.bg, color: currentStyle.colors.dark }}
-        >
-          {/* HEADER */}
-          <header className="flex justify-between items-center border-b border-current/10 pb-6">
-            <div className="flex items-center space-x-3">
-              <span className="font-extrabold tracking-widest text-xl">NEVER FINISHED</span>
-              <span className="text-[10px] px-2 py-0.5 rounded border border-current opacity-60">ED.01</span>
+        <div>
+          {/* HERO SECTIE MET VALLENDE MODULAIRE TEGEL-EDITIES */}
+          <section className="hero" id="start">
+            <div className="absolute top-6 left-8 font-bold text-xs tracking-widest uppercase z-10">
+              NEVER FINISHED — ED.01
             </div>
-            <div className="text-xs uppercase tracking-wider opacity-70">
-              {currentStyle.name}
+            <div className="absolute top-6 right-8 text-xs tracking-widest uppercase opacity-60 z-10">
+              STRAAT-TYPOGRAFIE MATRIX
             </div>
-          </header>
 
-          {/* KINETIC TYPO MATRIX */}
-          <main className="my-auto py-12 flex justify-center">
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6 max-w-6xl w-full">
-              {text.map((char, index) => {
-                const isHovered = hoveredIndex === index;
-                const tiles = generateTiles(char, styleIndex, isHovered);
+            <div className="scene">
+              <div className="text-center z-0 opacity-15">
+                <h1 className="text-8xl md:text-9xl font-extrabold tracking-tighter">NEVER<br/>FINISHED</h1>
+              </div>
+
+              {/* VALLENDE TEGEL-KAARTEN (GEÏNSPIREERD OP FLORENCE'S CODE) */}
+              {EDITIONS.map((ed, idx) => {
+                const tiles = generateTiles(ed.char, idx);
+                const positions = [
+                  { x: "15%", r: "-12deg", speed: "11s", delay: "0s" },
+                  { x: "38%", r: "8deg", speed: "13s", delay: "2s" },
+                  { x: "62%", r: "-6deg", speed: "10s", delay: "1.5s" },
+                  { x: "80%", r: "14deg", speed: "12s", delay: "0.5s" }
+                ];
+                const pos = positions[idx % positions.length];
 
                 return (
-                  <div
-                    key={index}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    className={`relative aspect-square p-3 rounded-xl border transition-all duration-500 ease-out cursor-pointer flex flex-col items-center justify-center ${
-                      isHovered 
-                        ? 'scale-110 shadow-2xl bg-white/50 border-current z-10 -translate-y-2' 
-                        : 'border-current/10 bg-white/10 hover:border-current/30'
-                    }`}
+                  <button
+                    key={idx}
+                    type="button"
+                    className="fall"
+                    data-label={`ED.0${idx + 1} — ${ed.title}`}
+                    style={{
+                      '--x': pos.x,
+                      '--r': pos.r,
+                      '--speed': pos.speed,
+                      '--delay': pos.delay,
+                      backgroundColor: ed.colors.bg
+                    }}
                   >
                     <div className="grid grid-cols-4 gap-1 w-full h-full">
                       {tiles.map((tile, tIdx) => (
-                        <div key={tIdx} className="w-full h-full">
-                          <TileSVG 
-                            type={tile.type} 
-                            color={currentStyle.colors[tile.colorKey]} 
-                            rotation={tile.rotation} 
-                            scale={tile.scale}
-                            animDelay={(index * 0.08) + (tIdx * 0.02)}
-                          />
-                        </div>
+                        <TileSVG
+                          key={tIdx}
+                          type={tile.type}
+                          color={ed.colors[tile.colorKey]}
+                          rotation={tile.rotation}
+                        />
                       ))}
                     </div>
-                    <span className="absolute -bottom-5 text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                      {char}
-                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <a href="#catalogue" className="absolute bottom-8 text-xs font-bold uppercase tracking-widest flex items-center space-x-2">
+              <span>Scroll naar catalogus</span>
+              <span>↓</span>
+            </a>
+          </section>
+
+          {/* CATALOGUS SECTIE */}
+          <section className="catalogue" id="catalogue">
+            <div className="topline">
+              <span>NEVER FINISHED / ARCHIEF</span>
+              <span>HISTORISCHE BELGISCHE GEVELS</span>
+            </div>
+
+            <h1>EDITIES</h1>
+
+            <div>
+              {EDITIONS.map((ed, idx) => {
+                const tiles = generateTiles(ed.char, idx);
+
+                return (
+                  <div key={idx} className="edition">
+                    <span className="number">{ed.num}</span>
+                    <div>
+                      <h2>{ed.title}</h2>
+                      <p>{ed.desc}</p>
+                      <span className="inline-block mt-4 text-xs font-bold border-b border-current pb-0.5">
+                        BRON: {ed.source}
+                      </span>
+                    </div>
+
+                    {/* PREVIEW VAN HET MODULAIRE RASTER */}
+                    <div className="preview" style={{ backgroundColor: ed.colors.bg }}>
+                      <div className="grid grid-cols-4 gap-1 w-full h-full">
+                        {tiles.map((tile, tIdx) => (
+                          <TileSVG
+                            key={tIdx}
+                            type={tile.type}
+                            color={ed.colors[tile.colorKey]}
+                            rotation={tile.rotation}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </main>
 
-          {/* FOOTER */}
-          <footer className="border-t border-current/10 pt-6 flex justify-between items-center text-xs">
-            <div>
-              <span className="font-bold">STIJL 0{currentStyle.id}/05: </span>
-              <span className="opacity-70">{currentStyle.source}</span>
-            </div>
-            <button
-              onClick={() => setStyleIndex((prev) => (prev + 1) % HISTORIC_STYLES.length)}
-              className="px-4 py-2 rounded-lg border border-current font-bold hover:bg-black/5 transition-all active:scale-95"
-            >
-              DRUK SPATIEBALK OM TE REMIXEN
-            </button>
-          </footer>
-
+            <footer className="pt-16 flex justify-between text-xs opacity-60 uppercase tracking-widest">
+              <span>LUCA SINT-LUCAS GENT</span>
+              <span>2026–2027</span>
+            </footer>
+          </section>
         </div>
       );
     }
